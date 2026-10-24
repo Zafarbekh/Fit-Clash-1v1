@@ -211,7 +211,7 @@ pose.setOptions({
   minTrackingConfidence: 0.5
 });
 
-// Uch nuqta orasidagi burchakni hisoblash (Yelka - Tirsak - Bilak)
+// Uch nuqta orasidagi burchakni hisoblash
 function calculateAngle(a, b, c) {
   let radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
   let angle = Math.abs((radians * 180.0) / Math.PI);
@@ -235,24 +235,30 @@ pose.onResults((results) => {
     drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#31e7ff', lineWidth: 3});
     drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ff3f64', radius: 4});
 
-    // O'ng qo'l nuqtalarini olish (Yelka: 12, Tirsak: 14, Bilak: 16)
     const landmarks = results.poseLandmarks;
-    const shoulder = landmarks[12];
-    const elbow = landmarks[14];
-    const wrist = landmarks[16];
+    
+    // Ham o'ng, ham chap qo'l nuqtalarini aniqlaymiz (Qaysi biri ko'rinsa)
+    const rightShoulder = landmarks[12], rightElbow = landmarks[14], rightWrist = landmarks[16];
+    const leftShoulder = landmarks[11], leftElbow = landmarks[13], leftWrist = landmarks[15];
 
-    if (shoulder && elbow && wrist) {
-      const angle = calculateAngle(shoulder, elbow, wrist);
+    let angle = null;
+    if (rightShoulder && rightElbow && rightWrist && rightShoulder.visibility > 0.5) {
+      angle = calculateAngle(rightShoulder, rightElbow, rightWrist);
+    } else if (leftShoulder && leftElbow && leftWrist) {
+      angle = calculateAngle(leftShoulder, leftElbow, leftWrist);
+    }
+
+    if (angle !== null) {
       confidence.innerText = `FORM: ${Math.round(angle)}°`;
 
-      // Otjimaniya logikasi (Push-up rep counting)
-      if (angle > 160) {
+      // Otjimaniya logikasi (yumshatilgan va ikkala qo'l uchun qulay)
+      if (angle > 150) {
         pushupStage = "up";
       }
-      if (angle < 90 && pushupStage === "up") {
+      if (angle < 105 && pushupStage === "up") {
         pushupStage = "down";
       }
-      if (angle > 160 && pushupStage === "down") {
+      if (angle > 150 && pushupStage === "down") {
         pushupStage = "up";
         currentReps++;
         repCounter.innerText = String(currentReps).padStart(2, '0');
