@@ -1,7 +1,83 @@
-// Socket.io ulanishi
 const socket = io();
 
-// UI elementlari
+// Ko'p tillilik lug'ati
+const dict = {
+  uz: { desc: "AI yordamida otjimaniya bo'yicha 1v1 musobaqa asbobi!", enterName: "Ismingizni kiriting:", enterAge: "Yoshingiz:", selectCountry: "Davlat:", enterArena: "ARENAGA KIRISH 🚀" },
+  ru: { desc: "Инструмент для соревнований 1v1 по отжиманиям с ИИ!", enterName: "Введите ваше имя:", enterAge: "Ваш возраст:", selectCountry: "Страна:", enterArena: "ВОЙТИ В АРЕНУ 🚀" },
+  en: { desc: "AI-powered 1v1 push-up fitness battle arena!", enterName: "Enter your name:", enterAge: "Your age:", selectCountry: "Country:", enterArena: "ENTER ARENA 🚀" }
+};
+let currentLang = localStorage.getItem('fit_lang') || 'uz';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('fit_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelector('[data-i18n="desc"]').innerText = dict[lang].desc;
+  document.querySelector('[data-i18n="enterName"]').innerText = dict[lang].enterName;
+  document.querySelector('[data-i18n="enterAge"]').innerText = dict[lang].enterAge;
+  document.querySelector('[data-i18n="selectCountry"]').innerText = dict[lang].selectCountry;
+  document.querySelector('[data-i18n="enterArena"]').innerText = dict[lang].enterArena;
+}
+
+// Foydalanuvchi ma'lumotlarini LocalStorage'dan olish
+let userProfile = JSON.parse(localStorage.getItem('fit_user')) || null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (userProfile) {
+    // Agar oldin kirgan bo'lsa, to'g'ridan-to'g'ri o'yinga o'tish
+    document.getElementById('landingScreen').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    initUserProfile();
+  }
+
+  document.getElementById('startAppBtn').addEventListener('click', () => {
+    const name = document.getElementById('setupName').value.trim() || "Wanderer";
+    const age = document.getElementById('setupAge').value || 18;
+    const country = document.getElementById('setupCountry').value;
+
+    userProfile = {
+      name, age, country,
+      hp: 0, wins: 0, draws: 0, losses: 0, level: 1, xp: 0
+    };
+    localStorage.setItem('fit_user', JSON.stringify(userProfile));
+
+    document.getElementById('landingScreen').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    initUserProfile();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('fit_user');
+    location.reload();
+  });
+});
+
+function initUserProfile() {
+  socket.emit('set-profile', { name: userProfile.name, country: userProfile.country });
+  document.getElementById('youName').innerText = userProfile.name;
+  document.getElementById('youCountry').innerText = `${userProfile.country} YOU`;
+  document.getElementById('welcomeUserText').innerText = `Xush kelibsiz, ${userProfile.name}!`;
+  updateStatsUI();
+}
+
+function updateStatsUI() {
+  document.getElementById('userLevel').innerText = String(userProfile.level).padStart(2, '0');
+  document.getElementById('statHp').innerText = userProfile.xp; // HP/XP sifatida ko'rsatamiz
+  document.getElementById('statWins').innerText = userProfile.wins;
+  document.getElementById('statDraws').innerText = userProfile.draws;
+  document.getElementById('statLosses').innerText = userProfile.losses;
+  document.getElementById('levelTitle').innerText = `LEVEL ${userProfile.level}`;
+  
+  const xpNeeded = userProfile.level * 100;
+  const pct = Math.min(100, (userProfile.xp / xpNeeded) * 100);
+  document.getElementById('xpText').innerText = `${userProfile.xp} / ${xpNeeded} XP`;
+  document.getElementById('xpBar').style.width = `${pct}%`;
+  
+  localStorage.setItem('fit_user', JSON.stringify(userProfile));
+}
+
+// UI elementlari va Socket hodisalari
 const onlineDot = document.getElementById('onlineDot');
 const connectionText = document.getElementById('connectionText');
 const repCounter = document.getElementById('repCounter');
@@ -11,8 +87,6 @@ const timerEl = document.getElementById('timer');
 const matchStatus = document.getElementById('matchStatus');
 const yourScore = document.getElementById('yourScore');
 const enemyScore = document.getElementById('enemyScore');
-const blueBar = document.getElementById('blueBar');
-const redBar = document.getElementById('redBar');
 const yourRepsText = document.getElementById('yourRepsText');
 const enemyRepsText = document.getElementById('enemyRepsText');
 
@@ -20,26 +94,15 @@ let currentReps = 0;
 let pushupStage = "up";
 let isPlaying = false;
 
-// Socket ulanish holati
 socket.on('connect', () => {
   onlineDot.parentElement.classList.add('online');
   connectionText.innerText = "ONLINE";
 });
-
 socket.on('disconnect', () => {
   onlineDot.parentElement.classList.remove('online');
   connectionText.innerText = "OFFLINE";
 });
 
-// Profilni saqlash
-document.getElementById('saveProfile').addEventListener('click', () => {
-  const name = document.getElementById('playerName').value;
-  const country = document.getElementById('country').value;
-  socket.emit('set-profile', { name, country });
-  showToast("Profil saqlandi!");
-});
-
-// Matching tugmalari
 document.getElementById('findMatch').addEventListener('click', () => {
   socket.emit('find-match');
   document.getElementById('findMatch').disabled = true;
@@ -52,57 +115,27 @@ document.getElementById('cancelSearch').addEventListener('click', () => {
   document.getElementById('cancelSearch').disabled = true;
 });
 
-document.getElementById('createRoom').addEventListener('click', () => {
-  socket.emit('create-room');
-});
+document.getElementById('createRoom').addEventListener('click', () => socket.emit('create-room'));
+document.getElementById('joinRoom').addEventListener('click', () => socket.emit('join-room', document.getElementById('roomCode').value));
+document.getElementById('readyBtn').addEventListener('click', () => socket.emit('player-ready'));
+document.getElementById('leaveRoom').addEventListener('click', () => { socket.emit('leave-room'); resetMatchUI(); });
 
-document.getElementById('joinRoom').addEventListener('click', () => {
-  const code = document.getElementById('roomCode').value;
-  socket.emit('join-room', code);
-});
+socket.on('queue-status', d => showToast(d.message));
+socket.on('match-found', d => setupRoomUI(d.room));
+socket.on('room-created', d => { setupRoomUI(d.room); document.getElementById('roomBanner').classList.remove('hidden'); document.getElementById('roomCodeDisplay').innerText = d.room.code; });
+socket.on('room-joined', d => setupRoomUI(d.room));
+socket.on('room-state', d => updateRoomState(d));
 
-document.getElementById('readyBtn').addEventListener('click', () => {
-  socket.emit('player-ready');
-});
-
-document.getElementById('leaveRoom').addEventListener('click', () => {
-  socket.emit('leave-room');
-  resetMatchUI();
-});
-
-// Xona va o'yin eventlari
-socket.on('queue-status', (data) => {
-  showToast(data.message);
-});
-
-socket.on('match-found', (data) => {
-  setupRoomUI(data.room);
-});
-
-socket.on('room-created', (data) => {
-  setupRoomUI(data.room);
-  document.getElementById('roomBanner').classList.remove('hidden');
-  document.getElementById('roomCodeDisplay').innerText = data.room.code;
-});
-
-socket.on('room-joined', (data) => {
-  setupRoomUI(data.room);
-});
-
-socket.on('room-state', (data) => {
-  updateRoomState(data);
-});
-
-socket.on('match-started', (data) => {
+socket.on('match-started', d => {
   isPlaying = true;
   matchStatus.innerText = "FIGHT!";
   document.getElementById('readyBtn').disabled = true;
   showToast("O'yin boshlandi! Otjimaniya qiling!");
-  startTimer(data.room.duration);
+  startTimer(d.room.duration);
 });
 
-socket.on('score-update', (data) => {
-  data.players.forEach(p => {
+socket.on('score-update', d => {
+  d.players.forEach(p => {
     if (p.id === socket.id) {
       yourScore.innerText = String(p.reps).padStart(2, '0');
       yourRepsText.innerText = `${p.reps} reps`;
@@ -113,20 +146,14 @@ socket.on('score-update', (data) => {
   });
 });
 
-socket.on('match-finished', (data) => {
+socket.on('match-finished', d => {
   isPlaying = false;
   matchStatus.innerText = "FINISHED";
-  showMatchResult(data.room);
+  showMatchResult(d.room);
 });
 
-socket.on('player-left', (data) => {
-  showToast(data.message);
-  resetMatchUI();
-});
-
-socket.on('room-error', (data) => {
-  alert(data.message);
-});
+socket.on('player-left', d => { showToast(d.message); resetMatchUI(); });
+socket.on('room-error', d => alert(d.message));
 
 function setupRoomUI(room) {
   document.getElementById('readyBtn').disabled = false;
@@ -164,9 +191,7 @@ function startTimer(duration) {
     timerEl.innerText = timeLeft;
     if (timeLeft <= 0) {
       clearInterval(interval);
-      if (isPlaying) {
-        socket.emit('match-finished');
-      }
+      if (isPlaying) socket.emit('match-finished');
     }
   }, 1000);
 }
@@ -175,21 +200,40 @@ function showMatchResult(room) {
   const modal = document.getElementById('resultModal');
   const resultTitle = document.getElementById('resultTitle');
   const resultText = document.getElementById('resultText');
-  
   modal.classList.remove('hidden');
+  
   const me = room.players.find(p => p.id === socket.id);
   const opponent = room.players.find(p => p.id !== socket.id);
-  
-  if (!opponent || me.reps > (opponent.reps || 0)) {
+  const oppReps = opponent ? opponent.reps : 0;
+
+  // HP va XP hisoblash қоидалари
+  let earnedXp = 0;
+  if (!opponent || me.reps > oppReps) {
     resultTitle.innerText = "VICTORY 🏆";
-    resultText.innerText = `Siz g'alaba qozondingiz! Jami natija: ${me.reps} ta otjimaniya.`;
-  } else if (me.reps < opponent.reps) {
+    userProfile.wins++;
+    earnedXp = 50; // Yutish uchun HP/XP
+    resultText.innerText = `G'alaba! +50 HP qo'shildi. Natija: ${me.reps} ta`;
+  } else if (me.reps < oppReps) {
     resultTitle.innerText = "DEFEAT ❌";
-    resultText.innerText = `Raqib g'alaba qozondi. Sizning natija: ${me.reps}, Raqib: ${opponent.reps}`;
+    userProfile.losses++;
+    earnedXp = 10; // Mag'lubiyat uchun ham ozgina
+    resultText.innerText = `Mag'lubiyat. +10 HP. Natija: ${me.reps} - ${oppReps}`;
   } else {
-    resultTitle.innerText = "DRAW 筹";
-    resultText.innerText = `Durrang! Ikkingiz ham ${me.reps} tadan qildingiz.`;
+    resultTitle.innerText = "DRAW 🤝";
+    userProfile.draws++;
+    earnedXp = 25; // Durrang uchun
+    resultText.innerText = `Durrang! +25 HP. Ikkingiz ham ${me.reps} tadan qildingiz.`;
   }
+
+  userProfile.xp += earnedXp;
+  // Level oshish logikasi (har 100 XP da level oshadi)
+  const neededXp = userProfile.level * 100;
+  if (userProfile.xp >= neededXp) {
+    userProfile.xp -= neededXp;
+    userProfile.level++;
+    showToast(`🎉 Tabriklaymiz! Siz ${userProfile.level}-darajaga chiqdingiz!`);
+  }
+  updateStatsUI();
 }
 
 document.getElementById('resultClose').addEventListener('click', () => {
@@ -197,67 +241,44 @@ document.getElementById('resultClose').addEventListener('click', () => {
   resetMatchUI();
 });
 
-// --- MEDIA-PIPE POSE & SMART REP COUNTING ---
-
-const pose = new Pose({
-  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-});
-
-pose.setOptions({
-  modelComplexity: 1,
-  smoothLandmarks: true,
-  enableSegmentation: false,
-  minDetectionConfidence: 0.4,
-  minTrackingConfidence: 0.4
-});
+// --- MEDIA-PIPE POSE & COUNTING ---
+const pose = new Pose({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
+pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
 
 const canvasElement = document.getElementById('overlay');
 const canvasCtx = canvasElement ? canvasElement.getContext('2d') : null;
-
-let minY = 999; // Eng yuqori nuqta (tik turgandagi holat)
-let maxY = 0;   // Eng pastki nuqta (otjimaniya qilgandagi holat)
+let minY = 999;
 
 pose.onResults((results) => {
   if (!canvasCtx || !canvasElement) return;
-  
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
   if (results.poseLandmarks) {
     poseState.innerText = "TANA ANIQLANDI ✅";
-    
     drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#31e7ff', lineWidth: 3});
     drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ff3f64', radius: 4});
 
     const landmarks = results.poseLandmarks;
     const shoulderY = (landmarks[11].y + landmarks[12].y) / 2;
-
     confidence.innerText = `Y: ${shoulderY.toFixed(2)}`;
 
-    // Dinamik ravishda eng yuqori va pastki nuqtalarni topib boramiz
     if (shoulderY < minY) minY = shoulderY;
-    if (shoulderY > maxY) maxY = shoulderY;
-
-    // Oraliq (amplitude) yetarlicha bo'lsa (masalan, 0.08 qadam)
     const threshold = 0.07;
 
     if (shoulderY > minY + threshold) {
-      pushupStage = "down"; // Pastga tushdi
+      pushupStage = "down";
     }
-    
     if (shoulderY < minY + threshold * 0.4 && pushupStage === "down") {
-      pushupStage = "up"; // Qaytadan tepaga chiqdi -> 1 ta sanaymiz!
+      pushupStage = "up";
       currentReps++;
       repCounter.innerText = String(currentReps).padStart(2, '0');
-      
-      // Har safar bitta tugagach, maxY ni qaytadan nolga tenglaymiz
       maxY = minY;
 
       if (isPlaying) {
         socket.emit('rep-update', { reps: currentReps });
       }
     }
-
   } else {
     poseState.innerText = "TANA QIDIRILMOQDA...";
     confidence.innerText = "FORM: —";
@@ -265,25 +286,18 @@ pose.onResults((results) => {
   canvasCtx.restore();
 });
 
-// Kamerani ishga tushirish
 async function initCamera() {
   const videoElement = document.getElementById('video');
   const cameraPrompt = document.getElementById('cameraPrompt');
-  
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 640, height: 480 }
-    });
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
     videoElement.srcObject = stream;
     await videoElement.play();
-
     canvasElement.width = videoElement.videoWidth || 640;
     canvasElement.height = videoElement.videoHeight || 480;
 
     async function predictionLoop() {
-      if (videoElement.readyState >= 2) {
-        await pose.send({ image: videoElement });
-      }
+      if (videoElement.readyState >= 2) await pose.send({ image: videoElement });
       requestAnimationFrame(predictionLoop);
     }
     predictionLoop();
@@ -300,12 +314,7 @@ async function initCamera() {
 
 document.getElementById('enableCamera').addEventListener('click', initCamera);
 document.getElementById('startCamera').addEventListener('click', initCamera);
-document.getElementById('resetReps').addEventListener('click', () => {
-  currentReps = 0;
-  repCounter.innerText = "00";
-  minY = 999;
-  maxY = 0;
-});
+document.getElementById('resetReps').addEventListener('click', () => { currentReps = 0; repCounter.innerText = "00"; minY = 999; });
 
 function showToast(text) {
   const toast = document.getElementById('toast');
