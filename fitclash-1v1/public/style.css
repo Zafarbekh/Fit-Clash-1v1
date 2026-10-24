@@ -145,3 +145,11 @@ footer{text-align:center;font-size:7px;color:#536a83;margin:24px 0 0}
 .toast{position:fixed;z-index:80;bottom:20px;left:50%;transform:translate(-50%,20px);background:#102b35;border:1px solid #31e7ff;color:#e5fdff;padding:10px 16px;border-radius:10px;font-size:10px;opacity:0;pointer-events:none;transition:.2s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .trophy{font-size:40px;margin-bottom:8px}
+/* Vaqt tanlash paneli */
+.time-selector-group{margin:10px 0}
+.time-selector-group label{font-size:8px;color:var(--muted);letter-spacing:.1em;display:block;margin-bottom:6px}
+.time-btn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.time-btn{background:#08111d;border:1px solid var(--line);color:var(--muted);padding:8px;border-radius:8px;font-size:9px;font-weight:700}
+.time-btn.active{border-color:var(--cyan);color:var(--cyan);background:#102538}
+.action-buttons-stack{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.btn.accent{background:linear-gradient(100deg,#10b981,#3b82f6);border-color:#6ee7b7;color:#03131c}
