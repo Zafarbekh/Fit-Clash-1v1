@@ -17,7 +17,7 @@ const yourRepsText = document.getElementById('yourRepsText');
 const enemyRepsText = document.getElementById('enemyRepsText');
 
 let currentReps = 0;
-let pushupStage = "up"; // "up" yoki "down"
+let pushupStage = "up";
 let isPlaying = false;
 
 // Socket ulanish holati
@@ -197,7 +197,7 @@ document.getElementById('resultClose').addEventListener('click', () => {
   resetMatchUI();
 });
 
-// --- MEDIA-PIPE POSE & PUSH-UP COUNTING ---
+// --- MEDIA-PIPE POSE & ULTRA-SIMPLE REP COUNTING ---
 
 const pose = new Pose({
   locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
@@ -207,20 +207,15 @@ pose.setOptions({
   modelComplexity: 1,
   smoothLandmarks: true,
   enableSegmentation: false,
-  minDetectionConfidence: 0.5,
-  minTrackingConfidence: 0.5
+  minDetectionConfidence: 0.4,
+  minTrackingConfidence: 0.4
 });
-
-// Uch nuqta orasidagi burchakni hisoblash
-function calculateAngle(a, b, c) {
-  let radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
-  let angle = Math.abs((radians * 180.0) / Math.PI);
-  if (angle > 180.0) angle = 360 - angle;
-  return angle;
-}
 
 const canvasElement = document.getElementById('overlay');
 const canvasCtx = canvasElement ? canvasElement.getContext('2d') : null;
+
+// Boshlang'ich yelka balandligini saqlash uchun o'zgaruvchilar
+let initialY = null;
 
 pose.onResults((results) => {
   if (!canvasCtx || !canvasElement) return;
@@ -231,41 +226,35 @@ pose.onResults((results) => {
   if (results.poseLandmarks) {
     poseState.innerText = "TANA ANIQLANDI ✅";
     
-    // Skelet chiziqlarini chizish
     drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#31e7ff', lineWidth: 3});
     drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ff3f64', radius: 4});
 
     const landmarks = results.poseLandmarks;
-    const rightShoulder = landmarks[12], rightElbow = landmarks[14], rightWrist = landmarks[16];
-    const leftShoulder = landmarks[11], leftElbow = landmarks[13], leftWrist = landmarks[15];
+    // O'rtacha yelka balandligini olamiz (11 va 12-nuqtalar)
+    const shoulderY = (landmarks[11].y + landmarks[12].y) / 2;
 
-    let angle = null;
-    if (rightShoulder && rightElbow && rightWrist) {
-      angle = calculateAngle(rightShoulder, rightElbow, rightWrist);
-    } else if (leftShoulder && leftElbow && leftWrist) {
-      angle = calculateAngle(leftShoulder, leftElbow, leftWrist);
+    confidence.innerText = `Y: ${shoulderY.toFixed(2)}`;
+
+    // Agar boshlang'ich holat o'rnatilmagan bo'lsa, olamiz
+    if (initialY === null) {
+      initialY = shoulderY;
     }
 
-    if (angle !== null && !isNaN(angle)) {
-      confidence.innerText = `FORM: ${Math.round(angle)}°`;
-
-      // Kengaytirilgan va oson ishlaydigan burchak shartlari
-      if (angle > 140) {
-        pushupStage = "up";
-      }
-      if (angle < 120 && pushupStage === "up") {
-        pushupStage = "down";
-      }
-      if (angle > 140 && pushupStage === "down") {
-        pushupStage = "up";
-        currentReps++;
-        repCounter.innerText = String(currentReps).padStart(2, '0');
-        
-        if (isPlaying) {
-          socket.emit('rep-update', { reps: currentReps });
-        }
+    // Juda oson mantiq: Agar yelka pastga tushsa (Y o'qi o'zgarsa) va keyin tepaga chiqsa
+    // MediaPipe'da Y pastga qarab o'sadi, shuning uchun pastga tushganda shoulderY kattalashadi
+    if (shoulderY > initialY + 0.08) {
+      pushupStage = "down";
+    }
+    if (shoulderY < initialY + 0.03 && pushupStage === "down") {
+      pushupStage = "up";
+      currentReps++;
+      repCounter.innerText = String(currentReps).padStart(2, '0');
+      
+      if (isPlaying) {
+        socket.emit('rep-update', { reps: currentReps });
       }
     }
+
   } else {
     poseState.innerText = "TANA QIDIRILMOQDA...";
     confidence.innerText = "FORM: —";
@@ -311,6 +300,7 @@ document.getElementById('startCamera').addEventListener('click', initCamera);
 document.getElementById('resetReps').addEventListener('click', () => {
   currentReps = 0;
   repCounter.innerText = "00";
+  initialY = null;
 });
 
 function showToast(text) {
