@@ -13,10 +13,12 @@
 </head>
 <body>
 
-  <!-- ==================== 1. LANDING PAGE ==================== -->
+  <!-- ==================== 1. ULTRA-PRO LANDING PAGE (REKLAMA & BO'LIMLAR) ==================== -->
   <div id="landingPage" class="landing-container">
+    
+    <!-- Navbar -->
     <nav class="landing-nav">
-      <div class="brand-logo"><span class="logo-icon">⚡</span><span>FITCLASH <b>ULTIMATE</b></span></div>
+      <div class="brand-logo"><span class="logo-icon">⚡</span><span>FITCLASH <b>PRO</b></span></div>
       <div class="lang-switch">
         <button class="lang-btn active" onclick="changeLanguage('uz')">🇺🇿 UZ</button>
         <button class="lang-btn" onclick="changeLanguage('ru')">🇷🇺 RU</button>
@@ -24,20 +26,65 @@
       </div>
     </nav>
 
+    <!-- 1-Bet: Hero (Asosiy Reklama) -->
     <header class="landing-hero">
-      <div class="hero-badge">CYBERSPORTS FITNESS EVOLUTION</div>
-      <h1 class="hero-title">REAL-VAQTDA <span>JANG QILING.</span> FORmani MUKAMMAL LASHTIRING.</h1>
-      <p class="hero-sub">AI yordamida otjimaniya va o'tirib-turish mashqlarini mukammal sanang. 1v1 raqobat yoki erkin mashq rejimini tanlang!</p>
-      <button class="btn primary hero-btn" id="openAuthBtn">ARENAGA KIRISH 🚀</button>
+      <div class="hero-badge">🔥 NEXT-GEN ESPORTS FITNESS ARENA</div>
+      <h1 class="hero-title">SUN'IY INTELLEKT BILAN <span>FITNESSNI O'YINGA AYLANTIRING.</span></h1>
+      <p class="hero-sub">Kamerangizni yoqing, otjimaniya va o'tirib-turish mashqlarini real vaqt rejimida 1v1 multiplayer jangda sinab ko'ring!</p>
+      <button class="btn primary hero-btn" onclick="scrollToSection('featuresSection')">IMKONIYATLARNI KO'RISH 👇</button>
     </header>
+
+    <!-- 2-Bet: Xususiyatlar (Features) -->
+    <section class="landing-features" id="featuresSection">
+      <div class="feature-card panel">
+        <div class="feat-icon">🎯</div>
+        <h3>AI Pose Detection</h3>
+        <p>MediaPipe texnologiyasi yordamida tana harakatlaringiz millisekundlik aniqlikda o'qiladi.</p>
+      </div>
+      <div class="feature-card panel">
+        <div class="feat-icon">⚔️</div>
+        <h3>1v1 Global Battles</h3>
+        <p>Dunyodagi istalgan sportchi bilan real vaqtda bellashing va o'z darajangizni isbotlang.</p>
+      </div>
+      <div class="feature-card panel">
+        <div class="feat-icon">🏆</div>
+        <h3>XP & Level Up</h3>
+        <p>Har bir g'alaba va mashq uchun XP to'plang, level oshiring va yetakchiga aylaning.</p>
+      </div>
+    </section>
+
+    <!-- 3-Bet: Qanday Ishlaydi? (How it works) -->
+    <section class="landing-steps panel">
+      <h2>QANDAY ISHLAYDI?</h2>
+      <div class="steps-grid">
+        <div class="step-item"><b>01</b><p>Kamerani yonboshga (otjimaniya) yoki oldinga (squat) qo'ying.</p></div>
+        <div class="step-item"><b>02</b><p>Mashq turini va vaqtni (40s, 1m) tanlang.</p></div>
+        <div class="step-item"><b>03</b><p>Raqibni topib g'alaba qozoning va XP yig'ing!</p></div>
+      </div>
+      <button class="btn primary big-btn start-arena-trigger" id="openAuthBtn">ARENAGA KIRISH 🚀</button>
+    </section>
+
+    <!-- 4-Bet: Portfolio & Telegram Bog'lanish (Siz so'ragan maxsus blok) -->
+    <section class="landing-promo-footer panel">
+      <div class="promo-content">
+        <span class="promo-badge">💡 CUSTOM WEB DEVELOPMENT</span>
+        <h2>O'zingiz yoki biznesingiz uchun shunday zamonaviy sayt yoki ilova kerakmi?</h2>
+        <p>Telegram orqali bog'laning va o'z loyihangizni noldan professional darajada yarating!</p>
+        <a href="https://t.me/Zafarbek_M" target="_blank" class="btn telegram-btn">
+          <span>✈️ TELEGRAM ORQALI BOG'LANISH</span>
+        </a>
+      </div>
+    </section>
+
+    <footer class="landing-footer-copy">FITCLASH ULTIMATE · DEVELOPED BY ZAFARBEK</footer>
   </div>
 
   <!-- ==================== 2. AUTH MODAL ==================== -->
   <div id="authModal" class="modal-backdrop hidden">
     <div class="modal panel auth-card">
       <div class="brand-logo center"><span class="logo-icon">⚡</span><span>FITCLASH</span></div>
-      <h2>PROFIL YARATISH</h2>
-      <p class="muted">Ismingiz va davlatingizni kiriting</p>
+      <h2>PROFIL YARATgari</h2>
+      <p class="muted">Arenaga kirish uchun ismingizni kiriting</p>
       <div class="form-group"><label>ISM / NICKNAME</label><input id="regName" maxlength="18" placeholder="CyberAthlete"></div>
       <div class="form-group"><label>YOSH</label><input id="regAge" type="number" min="7" max="99" value="18"></div>
       <div class="form-group"><label>DAVLAT</label>
@@ -85,7 +132,6 @@
       <section class="main-content-col">
         <div id="lobbySection" class="lobby-section">
           
-          <!-- Rejimlar -->
           <div class="panel mode-selector">
             <h3>MASHQ TURI</h3>
             <div class="mode-grid">
@@ -94,7 +140,6 @@
             </div>
           </div>
 
-          <!-- O'yin Rejimi & Vaqt sozlamalari -->
           <div class="panel match-controls">
             <h3>BELLASHUV / MASHQ SOZLAMASI</h3>
             
@@ -122,7 +167,7 @@
           </div>
         </div>
 
-        <!-- ==================== ARENA & CAMERA SECTION ==================== -->
+        <!-- ARENA & CAMERA SECTION -->
         <div id="arenaSection" class="arena-section hidden">
           <div class="panel scoreboard">
             <div class="fighter"><div class="fighter-avatar blue">YOU</div><div class="fighter-info"><b id="youName">Wanderer</b><small id="youCountry">🇺🇿 YOU</small></div><strong id="yourScore" class="score blue-text">00</strong></div>
@@ -145,7 +190,7 @@
               <div class="camera-prompt" id="cameraPrompt">
                 <div class="prompt-icon">📷</div>
                 <b>KAMERANI ULANG</b>
-                <p>Yonbosh holatda turing, tanangiz to'liq ko'rinsin.</p>
+                <p>Yonbosh (otjimaniya) yoki to'g'ri (squat) holatda turing.</p>
                 <button class="btn primary" id="enableCameraBtn">KAMERANI YOQISH</button>
               </div>
             </div>
@@ -166,5 +211,10 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/app.js"></script>
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 </body>
 </html>
