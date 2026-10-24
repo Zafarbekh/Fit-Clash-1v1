@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitClash 1v1 — Cyber AI Fitness Arena</title>
+  <title>FitClash 1v1 — Ultimate Cyber Arena</title>
   <link rel="stylesheet" href="/style.css">
   
   <!-- MediaPipe kutubxonalari -->
@@ -13,13 +13,10 @@
 </head>
 <body>
 
-  <!-- ==================== 1. PROMO LANDING PAGE (YANGI FOYDALANUVCHILAR UCHUN) ==================== -->
+  <!-- ==================== 1. LANDING PAGE ==================== -->
   <div id="landingPage" class="landing-container">
     <nav class="landing-nav">
-      <div class="brand-logo">
-        <span class="logo-icon">ϟ</span>
-        <span class="logo-text">FITCLASH <b>1V1</b></span>
-      </div>
+      <div class="brand-logo"><span class="logo-icon">⚡</span><span>FITCLASH <b>ULTIMATE</b></span></div>
       <div class="lang-switch">
         <button class="lang-btn active" onclick="changeLanguage('uz')">🇺🇿 UZ</button>
         <button class="lang-btn" onclick="changeLanguage('ru')">🇷🇺 RU</button>
@@ -28,264 +25,144 @@
     </nav>
 
     <header class="landing-hero">
-      <div class="hero-badge" data-i18n="heroBadge">⚡ AI-POWERED 1V1 FITNESS ARENA</div>
-      <h1 class="hero-title" data-i18n="heroTitle">REAL-VAQTDA <span>BELLASHING.</span> REPOKLARNI ENGLANG.</h1>
-      <p class="hero-sub" data-i18n="heroSub">Kompyuter ko'rishi (AI Computer Vision) orqali harakatlaringizni aniq sanaydi. Do'stlaringiz yoki dunyo bo'ylab raqiblar bilan 1v1 multiplayer jang qiling!</p>
-      
-      <div class="hero-actions">
-        <button class="btn primary hero-btn" id="openAuthBtn" data-i18n="playNow">O'YINGA KIRISH 🚀</button>
-      </div>
+      <div class="hero-badge">CYBERSPORTS FITNESS EVOLUTION</div>
+      <h1 class="hero-title">REAL-VAQTDA <span>JANG QILING.</span> FORmani MUKAMMAL LASHTIRING.</h1>
+      <p class="hero-sub">AI yordamida otjimaniya va o'tirib-turish mashqlarini mukammal sanang. 1v1 raqobat yoki erkin mashq rejimini tanlang!</p>
+      <button class="btn primary hero-btn" id="openAuthBtn">ARENAGA KIRISH 🚀</button>
     </header>
-
-    <!-- Imkoniyatlar bo'limi -->
-    <section class="landing-features">
-      <div class="feature-card panel">
-        <div class="feat-icon">🎯</div>
-        <h3 data-i18n="feat1Title">Aniq AI Sanagich</h3>
-        <p data-i18n="feat1Desc">MediaPipe Pose Detection orqali otjimaniya va o'tirib-turish harakatlarini avtomatik o'qiydi.</p>
-      </div>
-      <div class="feature-card panel">
-        <div class="feat-icon">⚔️</div>
-        <h3 data-i18n="feat2Title">1v1 Multiplayer</h3>
-        <p data-i18n="feat2Desc">Global matchmaking yoki maxsus xona kodlari orqali do'stlar bilan bellashing.</p>
-      </div>
-      <div class="feature-card panel">
-        <div class="feat-icon">🏆</div>
-        <h3 data-i18n="feat3Title">XP va Level Tizimi</h3>
-        <p data-i18n="feat3Desc">Har bir g'alaba uchun XP to'plang, darajangizni oshiring va yetakchilar safidan joy oling.</p>
-      </div>
-    </section>
   </div>
 
-  <!-- ==================== 2. AUTH / RO'YXATDAN O'TISH MODAL ==================== -->
+  <!-- ==================== 2. AUTH MODAL ==================== -->
   <div id="authModal" class="modal-backdrop hidden">
     <div class="modal panel auth-card">
-      <div class="brand-logo center">
-        <span class="logo-icon">ϟ</span>
-        <span>FITCLASH</span>
+      <div class="brand-logo center"><span class="logo-icon">⚡</span><span>FITCLASH</span></div>
+      <h2>PROFIL YARATISH</h2>
+      <p class="muted">Ismingiz va davlatingizni kiriting</p>
+      <div class="form-group"><label>ISM / NICKNAME</label><input id="regName" maxlength="18" placeholder="CyberAthlete"></div>
+      <div class="form-group"><label>YOSH</label><input id="regAge" type="number" min="7" max="99" value="18"></div>
+      <div class="form-group"><label>DAVLAT</label>
+        <select id="regCountry"><option value="🇺🇿">🇺🇿 Uzbekistan</option><option value="🇬🇧">🇬🇧 UK</option><option value="🇺🇸">🇺🇸 USA</option><option value="🇰🇷">🇰🇷 South Korea</option></select>
       </div>
-      <h2 data-i18n="registerTitle">PROFIL YARATISH</h2>
-      <p class="muted" data-i18n="registerSub">Arenaga kirish uchun ma'lumotlaringizni kiriting</p>
-
-      <div class="form-group">
-        <label data-i18n="lblName">ISM / NICKNAME</label>
-        <input id="regName" maxlength="18" placeholder="Wanderer">
-      </div>
-      <div class="form-group">
-        <label data-i18n="lblAge">YOSH</label>
-        <input id="regAge" type="number" min="7" max="99" placeholder="18">
-      </div>
-      <div class="form-group">
-        <label data-i18n="lblCountry">DAVLAT</label>
-        <select id="regCountry">
-          <option value="🇺🇿">🇺🇿 Uzbekistan</option>
-          <option value="🇬🇧">🇬🇧 United Kingdom</option>
-          <option value="🇺🇸">🇺🇸 United States</option>
-          <option value="🇹🇷">🇹🇷 Türkiye</option>
-          <option value="🇰🇷">🇰🇷 South Korea</option>
-          <option value="🇯🇵">🇯🇵 Japan</option>
-        </select>
-      </div>
-
-      <button class="btn primary big-btn" id="saveProfileBtn" data-i18n="btnStart">ARENAGA O'TISH 🔥</button>
-      <button class="btn link-btn" id="closeAuthBtn" data-i18n="btnCancel">Orqaga</button>
+      <button class="btn primary big-btn" id="saveProfileBtn">BOSHLASH 🔥</button>
+      <button class="btn link-btn" id="closeAuthBtn">Orqaga</button>
     </div>
   </div>
 
-  <!-- ==================== 3. ASOSIY DASHBOARD & LOBBY (RO'YXATDAN O'TGANLAR UCHUN) ==================== -->
+  <!-- ==================== 3. MAIN DASHBOARD ==================== -->
   <div id="appContainer" class="app-container hidden">
-    
-    <!-- Topbar -->
     <header class="topbar panel">
-      <div class="brand">
-        <span class="logo-icon">ϟ</span>
-        <span class="brand-name">FITCLASH <b>1V1</b></span>
-      </div>
+      <div class="brand"><span class="logo-icon">⚡</span><span class="brand-name">FITCLASH <b>ARENA</b></span></div>
       <div class="topbar-right">
-        <div class="user-pill">
-          <span class="avatar-icon">⚡</span>
-          <span id="navUserName">Wanderer</span>
-          <span class="level-badge" id="navUserLevel">LVL 1</span>
-        </div>
+        <div class="user-pill"><span id="navUserName">Wanderer</span><span class="level-badge" id="navUserLevel">LVL 1</span></div>
         <button class="btn icon-btn danger" id="logoutBtn" title="Chiqish">🚪</button>
-        <div class="connection"><i id="onlineDot"></i><span id="connectionText">CONNECTING</span></div>
+        <div class="connection"><i id="onlineDot"></i><span id="connectionText">ONLINE</span></div>
       </div>
     </header>
 
-    <!-- Main Layout -->
     <main class="dashboard-grid">
-      
-      <!-- Chap Tomon: Statistikalar va Profil -->
+      <!-- Sidebar Stats -->
       <aside class="sidebar-col">
         <section class="panel user-card">
-          <div class="profile-header">
-            <div class="big-avatar">⚡</div>
-            <div class="user-details">
-              <h3 id="dashUserName">Wanderer</h3>
-              <p id="dashUserMeta">🇺🇿 Uzbekistan · 18 yosh</p>
-            </div>
-          </div>
+          <div class="profile-header"><div class="big-avatar">⚡</div><div><h3 id="dashUserName">Wanderer</h3><p id="dashUserMeta">🇺🇿 Uzbekistan</p></div></div>
           <div class="xp-container">
-            <div class="xp-labels">
-              <span id="dashLevelTitle">LEVEL 01</span>
-              <span id="dashXpText">0 / 100 XP</span>
-            </div>
-            <div class="xp-bar-bg">
-              <div id="dashXpFill" class="xp-bar-fill" style="width: 0%;"></div>
-            </div>
+            <div class="xp-labels"><span id="dashLevelTitle">LEVEL 01</span><span id="dashXpText">0 / 100 XP</span></div>
+            <div class="xp-bar-bg"><div id="dashXpFill" class="xp-bar-fill" style="width: 0%;"></div></div>
           </div>
         </section>
 
         <section class="panel stats-panel">
-          <h4 data-i18n="statsTitle">FAOLIYAT STATISTIKASI</h4>
+          <h4>STATISTIKA</h4>
           <div class="stats-grid">
-            <div class="stat-box"><small data-i18n="statWins">G'ALABALAR</small><b id="statWinsVal">0</b></div>
-            <div class="stat-box"><small data-i18n="statDraws">DURRANG</small><b id="statDrawsVal">0</b></div>
-            <div class="stat-box"><small data-i18n="statLosses">MAG'LUBIYAT</small><b id="statLossesVal">0</b></div>
-            <div class="stat-box"><small data-i18n="statTotalHp">HP / REPOK</small><b id="statHpVal">0</b></div>
+            <div class="stat-box"><small>G'ALABA</small><b id="statWinsVal">0</b></div>
+            <div class="stat-box"><small>DURRANG</small><b id="statDrawsVal">0</b></div>
+            <div class="stat-box"><small>MAG'LUB</small><b id="statLossesVal">0</b></div>
+            <div class="stat-box"><small>JAMI XP</small><b id="statHpVal">0</b></div>
           </div>
         </section>
       </aside>
 
-      <!-- O'rta Tomon: O'yin Rejimini Tanlash va Matchmaking -->
+      <!-- Center Col: Modes & Controls -->
       <section class="main-content-col">
-        
-        <!-- Rejim tanlash card -->
         <div id="lobbySection" class="lobby-section">
           
+          <!-- Rejimlar -->
           <div class="panel mode-selector">
-            <h3 data-i18n="selectModeTitle">O'YIN REJIMINI TANLANG</h3>
+            <h3>MASHQ TURI</h3>
             <div class="mode-grid">
-              <div class="mode-card active" id="modePushup" onclick="selectGameMode('pushup')">
-                <div class="mode-icon">💪</div>
-                <h4>PUSH-UPS</h4>
-                <p data-i18n="pushupDesc">Otjimaniya qilish bo'yicha 1v1 bellashuv</p>
-              </div>
-              <div class="mode-card" id="modeSquat" onclick="selectGameMode('squat')">
-                <div class="mode-icon">🏋️</div>
-                <h4>SQUATS</h4>
-                <p data-i18n="squatDesc">O'tirib-turish bo'yicha 1v1 bellashuv</p>
-              </div>
+              <div class="mode-card active" id="modePushup" onclick="selectGameMode('pushup')"><div class="mode-icon">💪</div><h4>PUSH-UPS</h4><p>Otjimaniya</p></div>
+              <div class="mode-card" id="modeSquat" onclick="selectGameMode('squat')"><div class="mode-icon">🏋️</div><h4>SQUATS</h4><p>O'tirib-turish</p></div>
             </div>
           </div>
 
-          <!-- Action buttons -->
+          <!-- O'yin Rejimi & Vaqt sozlamalari -->
           <div class="panel match-controls">
-            <div class="action-buttons">
-              <button class="btn primary big-btn" id="findMatchBtn" data-i18n="btnGlobalMatch">⚔️ GLOBAL MATCHMAKING</button>
-              <button class="btn big-btn" id="cancelSearchBtn" disabled data-i18n="btnCancelSearch">Qidiruvni bekor qilish</button>
+            <h3>BELLASHUV / MASHQ SOZLAMASI</h3>
+            
+            <div class="time-selector-group">
+              <label>DAVOMIYLIK VAQTI:</label>
+              <div class="time-btn-grid">
+                <button class="time-btn active" onclick="setDuration(40)">40 Soniya</button>
+                <button class="time-btn" onclick="setDuration(60)">1 Daqiqa</button>
+                <button class="time-btn" onclick="setDuration(80)">1.20 Daqiqa</button>
+              </div>
+            </div>
+
+            <div class="action-buttons-stack">
+              <button class="btn primary big-btn" id="findMatchBtn">⚔️ GLOBAL MATCHMAKING (1v1)</button>
+              <button class="btn accent big-btn" id="soloTrainingBtn">🎯 ERKIN MASHQ QILISH (SOLO)</button>
+              <button class="btn big-btn" id="cancelSearchBtn" disabled>Qidiruvni bekor qilish</button>
             </div>
 
             <div class="room-tools">
-              <button class="btn" id="createRoomBtn" data-i18n="btnCreateRoom">＋ Xona yaratish</button>
-              <div class="join-control">
-                <input id="roomCodeInput" placeholder="XONA KODI" maxlength="5">
-                <button class="btn" id="joinRoomBtn" data-i18n="btnJoinRoom">Kirish</button>
-              </div>
+              <button class="btn" id="createRoomBtn">＋ Maxsus xona yaratish</button>
+              <div class="join-control"><input id="roomCodeInput" placeholder="KOD" maxlength="5"><button class="btn" id="joinRoomBtn">Kirish</button></div>
             </div>
 
-            <div class="room-banner hidden" id="roomBanner">
-              <div>
-                <small data-i18n="roomCodeLbl">XONA KODI:</small>
-                <b id="roomCodeDisplay">-----</b>
-              </div>
-              <button class="btn small" id="copyCodeBtn" data-i18n="btnCopy">KODNI NUSXALASH</button>
-            </div>
+            <div class="room-banner hidden" id="roomBanner"><div><small>XONA KODI:</small><b id="roomCodeDisplay">-----</b></div><button class="btn small" id="copyCodeBtn">NUSXALASH</button></div>
           </div>
         </div>
 
-        <!-- ==================== 4. O'YIN KINEMATIK KANVAS VA KAMERA ARENASI ==================== -->
+        <!-- ==================== ARENA & CAMERA SECTION ==================== -->
         <div id="arenaSection" class="arena-section hidden">
-          
-          <!-- Scoreboard -->
           <div class="panel scoreboard">
-            <div class="fighter">
-              <div class="fighter-avatar blue">YOU</div>
-              <div class="fighter-info">
-                <b id="youName">Wanderer</b>
-                <small id="youCountry">🇺🇿 YOU</small>
-              </div>
-              <strong id="yourScore" class="score blue-text">00</strong>
-            </div>
-
-            <div class="match-clock">
-              <span id="matchStatus">LOBBY</span>
-              <b id="timer">40</b>
-              <small>SEC</small>
-              <em>VS</em>
-            </div>
-
-            <div class="fighter rival">
-              <strong id="enemyScore" class="score red-text">00</strong>
-              <div class="fighter-info">
-                <b id="enemyName">Raqib kutilmoqda...</b>
-                <small id="enemyCountry">🌐 OPPONENT</small>
-              </div>
-              <div class="fighter-avatar red">R</div>
-            </div>
+            <div class="fighter"><div class="fighter-avatar blue">YOU</div><div class="fighter-info"><b id="youName">Wanderer</b><small id="youCountry">🇺🇿 YOU</small></div><strong id="yourScore" class="score blue-text">00</strong></div>
+            <div class="match-clock"><span id="matchStatus">LOBBY</span><b id="timer">40</b><small>SEC</small><em>VS</em></div>
+            <div class="fighter rival"><strong id="enemyScore" class="score red-text">00</strong><div class="fighter-info"><b id="enemyName">Raqib kutilmoqda...</b><small id="enemyCountry">🌐 OPPONENT</small></div><div class="fighter-avatar red">R</div></div>
           </div>
 
-          <!-- Kiber Arena Kamera Frame -->
           <div class="panel camera-panel">
-            <div class="cam-header">
-              <span class="mode-badge" id="currentModeBadge">MODE: PUSH-UPS</span>
-              <div class="pill" id="aiPill">AI OFFLINE</div>
-            </div>
+            <div class="cam-header"><span class="mode-badge" id="currentModeBadge">MODE: PUSH-UPS</span><div class="pill" id="aiPill">AI OFFLINE</div></div>
 
             <div class="camera-stage-cyber">
               <video id="video" autoplay playsinline muted width="640" height="480"></video>
               <canvas id="overlay"></canvas>
-              
-              <!-- Neon Kiber Ramka Qirralari -->
-              <div class="cyber-frame-corner top-left"></div>
-              <div class="cyber-frame-corner top-right"></div>
-              <div class="cyber-frame-corner bottom-left"></div>
-              <div class="cyber-frame-corner bottom-right"></div>
+              <div class="cyber-frame-corner top-left"></div><div class="cyber-frame-corner top-right"></div>
+              <div class="cyber-frame-corner bottom-left"></div><div class="cyber-frame-corner bottom-right"></div>
 
-              <div class="cam-hud">
-                <span id="poseState">KAMERA O'CHIK</span>
-                <span id="confidence">FORM: —</span>
-              </div>
-
-              <div class="rep-display-cyber">
-                <b id="repCounter">00</b>
-                <small data-i18n="validReps">MUVAFFAQIYATLI</small>
-              </div>
+              <div class="cam-hud"><span id="poseState">KAMERA O'CHIK</span><span id="confidence">FORM: —</span></div>
+              <div class="rep-display-cyber"><b id="repCounter">00</b><small>REPS</small></div>
 
               <div class="camera-prompt" id="cameraPrompt">
                 <div class="prompt-icon">📷</div>
-                <b data-i18n="camPromptTitle">KAMERANI ULANG</b>
-                <p data-i18n="camPromptDesc">Tanangiz va harakatlaringiz ko'rinishi uchun kameraga to'liq ko'rinib turing.</p>
-                <button class="btn primary" id="enableCameraBtn" data-i18n="btnEnableCam">KAMERANI YOQISH</button>
+                <b>KAMERANI ULANG</b>
+                <p>Yonbosh holatda turing, tanangiz to'liq ko'rinsin.</p>
+                <button class="btn primary" id="enableCameraBtn">KAMERANI YOQISH</button>
               </div>
             </div>
 
             <div class="camera-actions">
-              <button class="btn primary big-btn" id="readyBtn" disabled data-i18n="btnReady">TAYYORMAN / START</button>
-              <button class="btn danger big-btn" id="leaveRoomBtn" data-i18n="btnLeave">BELLASHUVNI TARK ETISH</button>
+              <button class="btn primary big-btn" id="readyBtn" disabled>TAYYORMAN / START</button>
+              <button class="btn danger big-btn" id="leaveRoomBtn">CHIQISH</button>
             </div>
           </div>
-
         </div>
-
       </section>
     </main>
-
-    <footer>FITCLASH 1V1 · CYBER FITNESS ARENA</footer>
+    <footer>FITCLASH ULTIMATE · CYBER ARENA</footer>
   </div>
 
   <div class="toast" id="toast"></div>
-
-  <!-- Result Modal -->
-  <div class="modal-backdrop hidden" id="resultModal">
-    <div class="modal panel">
-      <div class="trophy" id="resultIcon">🏆</div>
-      <p class="eyebrow" data-i18n="matchComplete">BELLASHUV YAKUNLANDI</p>
-      <h2 id="resultTitle">VICTORY</h2>
-      <p id="resultText"></p>
-      <button class="btn primary" id="resultCloseBtn" data-i18n="btnBackLobby">LOBBYGA QAYTISH</button>
-    </div>
-  </div>
+  <div class="modal-backdrop hidden" id="resultModal"><div class="modal panel"><div class="trophy" id="resultIcon">🏆</div><p class="eyebrow">NATIJA</p><h2 id="resultTitle">VICTORY</h2><p id="resultText"></p><button class="btn primary" id="resultCloseBtn">LOBBYGA QAYTISH</button></div></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/app.js"></script>
