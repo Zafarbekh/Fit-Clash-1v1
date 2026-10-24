@@ -187,7 +187,7 @@ function showMatchResult(room) {
     resultTitle.innerText = "DEFEAT ❌";
     resultText.innerText = `Raqib g'alaba qozondi. Sizning natija: ${me.reps}, Raqib: ${opponent.reps}`;
   } else {
-    resultTitle.innerText = "DRAW 🤝";
+    resultTitle.innerText = "DRAW 筹";
     resultText.innerText = `Durrang! Ikkingiz ham ${me.reps} tadan qildingiz.`;
   }
 }
@@ -197,7 +197,7 @@ document.getElementById('resultClose').addEventListener('click', () => {
   resetMatchUI();
 });
 
-// --- MEDIA-PIPE POSE & ULTRA-SIMPLE REP COUNTING ---
+// --- MEDIA-PIPE POSE & SMART REP COUNTING ---
 
 const pose = new Pose({
   locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
@@ -214,8 +214,8 @@ pose.setOptions({
 const canvasElement = document.getElementById('overlay');
 const canvasCtx = canvasElement ? canvasElement.getContext('2d') : null;
 
-// Boshlang'ich yelka balandligini saqlash uchun o'zgaruvchilar
-let initialY = null;
+let minY = 999; // Eng yuqori nuqta (tik turgandagi holat)
+let maxY = 0;   // Eng pastki nuqta (otjimaniya qilgandagi holat)
 
 pose.onResults((results) => {
   if (!canvasCtx || !canvasElement) return;
@@ -230,26 +230,29 @@ pose.onResults((results) => {
     drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ff3f64', radius: 4});
 
     const landmarks = results.poseLandmarks;
-    // O'rtacha yelka balandligini olamiz (11 va 12-nuqtalar)
     const shoulderY = (landmarks[11].y + landmarks[12].y) / 2;
 
     confidence.innerText = `Y: ${shoulderY.toFixed(2)}`;
 
-    // Agar boshlang'ich holat o'rnatilmagan bo'lsa, olamiz
-    if (initialY === null) {
-      initialY = shoulderY;
-    }
+    // Dinamik ravishda eng yuqori va pastki nuqtalarni topib boramiz
+    if (shoulderY < minY) minY = shoulderY;
+    if (shoulderY > maxY) maxY = shoulderY;
 
-    // Juda oson mantiq: Agar yelka pastga tushsa (Y o'qi o'zgarsa) va keyin tepaga chiqsa
-    // MediaPipe'da Y pastga qarab o'sadi, shuning uchun pastga tushganda shoulderY kattalashadi
-    if (shoulderY > initialY + 0.08) {
-      pushupStage = "down";
+    // Oraliq (amplitude) yetarlicha bo'lsa (masalan, 0.08 qadam)
+    const threshold = 0.07;
+
+    if (shoulderY > minY + threshold) {
+      pushupStage = "down"; // Pastga tushdi
     }
-    if (shoulderY < initialY + 0.03 && pushupStage === "down") {
-      pushupStage = "up";
+    
+    if (shoulderY < minY + threshold * 0.4 && pushupStage === "down") {
+      pushupStage = "up"; // Qaytadan tepaga chiqdi -> 1 ta sanaymiz!
       currentReps++;
       repCounter.innerText = String(currentReps).padStart(2, '0');
       
+      // Har safar bitta tugagach, maxY ni qaytadan nolga tenglaymiz
+      maxY = minY;
+
       if (isPlaying) {
         socket.emit('rep-update', { reps: currentReps });
       }
@@ -300,7 +303,8 @@ document.getElementById('startCamera').addEventListener('click', initCamera);
 document.getElementById('resetReps').addEventListener('click', () => {
   currentReps = 0;
   repCounter.innerText = "00";
-  initialY = null;
+  minY = 999;
+  maxY = 0;
 });
 
 function showToast(text) {
