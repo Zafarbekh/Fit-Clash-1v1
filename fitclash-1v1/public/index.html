@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,100 +8,123 @@
   
   <!-- MediaPipe kutubxonalari -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-  <!-- MediaPipe kutubxonalari -->
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<div class="app">
-  <header class="topbar">
-    <a class="brand" href="#"><span class="logo">ϟ</span><span>FITCLASH <b>1V1</b><small>MOVE. COMPETE. CONQUER.</small></span></a>
-    <div class="connection"><i id="onlineDot"></i><span id="connectionText">CONNECTING</span></div>
-  </header>
 
-  <section class="hero">
-    <div><p class="eyebrow">AI FITNESS ARENA · SEASON 01</p><h1>ENTER THE <span>ARENA.</span></h1><p class="sub">Your form. Your reps. Your victory.</p></div>
-    <div class="level">LV <b>04</b><small>ROOKIE FIGHTER</small></div>
-  </section>
+  <!-- 1. LANDING / KIRISH SAHifASI (Boshlang'ich ko'rinish) -->
+  <div id="landingScreen" class="landing-screen">
+    <div class="landing-card panel">
+      <div class="brand-large"><span class="logo">ϟ</span><span>FITCLASH <b>1V1</b></span></div>
+      <p class="landing-desc" data-i18n="desc">Real vaqt rejimida AI yordamida otjimaniya bo'yicha 1v1 musobaqa asbobi!</p>
+      
+      <!-- Til tanlash -->
+      <div class="lang-selector">
+        <button class="lang-btn active" onclick="setLang('uz')">🇺🇿 O'zbekcha</button>
+        <button class="lang-btn" onclick="setLang('ru')">🇷🇺 Русский</button>
+        <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+      </div>
 
-  <section class="profilebar panel">
-    <div class="avatar">⚡</div>
-    <div class="profile-fields"><label for="playerName">PLAYER NAME</label><input id="playerName" maxlength="18" value="Wanderer" autocomplete="nickname"></div>
-    <div class="profile-fields country-field">
-      <label for="country">COUNTRY</label>
-      <select id="country">
-        <option value="🇺🇿">🇺🇿 Uzbekistan</option>
-        <option value="🇬🇧">🇬🇧 United Kingdom</option>
-        <option value="🇺🇸">🇺🇸 United States</option>
-        <option value="🇹🇷">🇹🇷 Türkiye</option>
-        <option value="🇰🇷">🇰🇷 South Korea</option>
-        <option value="🇧🇷">🇧🇷 Brazil</option>
-        <option value="🇯🇵">🇯🇵 Japan</option>
-      </select>
+      <div class="profile-setup-box">
+        <label data-i18n="enterName">Ismingizni kiriting:</label>
+        <input id="setupName" maxlength="18" placeholder="Masalan: Wanderer">
+        
+        <label data-i18n="enterAge">Yoshingiz:</label>
+        <input id="setupAge" type="number" min="5" max="99" placeholder="18">
+
+        <label data-i18n="selectCountry">Davlat:</label>
+        <select id="setupCountry">
+          <option value="🇺🇿">🇺🇿 Uzbekistan</option>
+          <option value="🇬🇧">🇬🇧 United Kingdom</option>
+          <option value="🇺🇸">🇺🇸 United States</option>
+          <option value="🇹🇷">🇹🇷 Türkiye</option>
+          <option value="🇰🇷">🇰🇷 South Korea</option>
+          <option value="🇯🇵">🇯🇵 Japan</option>
+        </select>
+
+        <button class="btn primary big-btn" id="startAppBtn" data-i18n="enterArena">ARENAGA KIRish 🚀</button>
+      </div>
     </div>
-    <button class="btn small" id="saveProfile">SAVE PROFILE</button>
-  </section>
+  </div>
 
-  <main class="layout">
-    <div class="main-col">
-      <section class="scoreboard panel">
-        <div class="fighter"><div class="fighter-avatar blue">YOU</div><div class="fighter-info"><b id="youName">Wanderer</b><small id="youCountry">🇺🇿 YOU · LV 04</small></div><strong id="yourScore" class="score blue-text">00</strong></div>
-        <div class="match-clock"><span id="matchStatus">LOBBY</span><b id="timer">40</b><small>SECONDS</small><em>VS</em></div>
-        <div class="fighter rival"><strong id="enemyScore" class="score red-text">00</strong><div class="fighter-info"><b id="enemyName">Waiting for rival</b><small id="enemyCountry">🌐 OPPONENT</small></div><div class="fighter-avatar red">R</div></div>
-        <div class="score-track"><div id="blueBar"></div><div id="redBar"></div></div>
-        <div class="score-foot"><span>CYAN TEAM <b id="yourRepsText">0 reps</b></span><span>RED TEAM <b id="enemyRepsText">0 reps</b></span></div>
-      </section>
+  <!-- 2. ASOSIY O'YIN ARENASI -->
+  <div class="app hidden" id="mainApp">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="logo">ϟ</span><span>FITCLASH <b>1V1</b><small>MOVE. COMPETE. CONQUER.</small></span></a>
+      <div class="topbar-right">
+        <button class="btn small danger" id="logoutBtn">Chiqish</button>
+        <div class="connection"><i id="onlineDot"></i><span id="connectionText">CONNECTING</span></div>
+      </div>
+    </header>
 
-      <section class="camera panel">
-        <div class="section-head"><div><p class="eyebrow">LIVE COMPUTER VISION</p><h2>POSE TRACKING <span>///</span></h2></div><div class="pill" id="aiPill">AI READY</div></div>
-        <div class="camera-stage" id="cameraStage">
-          <!-- autoplay va playsinline qo'shildi -->
-          <video id="video" autoplay playsinline muted width="640" height="480"></video>
-          <canvas id="overlay"></canvas>
-          <div class="scanline"></div>
-          <div class="cam-hud"><span id="poseState">CAMERA OFFLINE</span><span id="confidence">FORM: —</span></div>
-          <div class="rep-display"><b id="repCounter">00</b><small>VALID REPS</small></div>
-          <div class="camera-prompt" id="cameraPrompt">
-            <div class="camera-icon">◎</div>
-            <b>YOUR CAMERA. YOUR ARENA.</b>
-            <p>Place your phone/laptop sideways to your body so your shoulders, hips and elbows are visible.</p>
-            <button class="btn primary" id="enableCamera">ENABLE CAMERA</button>
+    <section class="hero">
+      <div><p class="eyebrow">AI FITNESS ARENA · SEASON 01</p><h1>ENTER THE <span>ARENA.</span></h1><p class="sub" id="welcomeUserText">Xush kelibsiz!</p></div>
+      <div class="level">LV <b id="userLevel">01</b><small>FIGHTER</small></div>
+    </section>
+
+    <main class="layout">
+      <div class="main-col">
+        <section class="scoreboard panel">
+          <div class="fighter"><div class="fighter-avatar blue">YOU</div><div class="fighter-info"><b id="youName">Wanderer</b><small id="youCountry">🇺🇿 YOU</small></div><strong id="yourScore" class="score blue-text">00</strong></div>
+          <div class="match-clock"><span id="matchStatus">LOBBY</span><b id="timer">40</b><small>SECONDS</small><em>VS</em></div>
+          <div class="fighter rival"><strong id="enemyScore" class="score red-text">00</strong><div class="fighter-info"><b id="enemyName">Waiting for rival</b><small id="enemyCountry">🌐 OPPONENT</small></div><div class="fighter-avatar red">R</div></div>
+          <div class="score-track"><div id="blueBar"></div><div id="redBar"></div></div>
+          <div class="score-foot"><span>CYAN TEAM <b id="yourRepsText">0 reps</b></span><span>RED TEAM <b id="enemyRepsText">0 reps</b></span></div>
+        </section>
+
+        <section class="camera panel">
+          <div class="section-head"><div><p class="eyebrow">LIVE COMPUTER VISION</p><h2>POSE TRACKING <span>///</span></h2></div><div class="pill" id="aiPill">AI READY</div></div>
+          <div class="camera-stage" id="cameraStage">
+            <video id="video" autoplay playsinline muted width="640" height="480"></video>
+            <canvas id="overlay"></canvas>
+            <div class="scanline"></div>
+            <div class="cam-hud"><span id="poseState">CAMERA OFFLINE</span><span id="confidence">FORM: —</span></div>
+            <div class="rep-display"><b id="repCounter">00</b><small>VALID REPS</small></div>
+            <div class="camera-prompt" id="cameraPrompt">
+              <div class="camera-icon">◎</div>
+              <b>YOUR CAMERA. YOUR ARENA.</b>
+              <p>Place your phone/laptop sideways so your shoulders and body are visible.</p>
+              <button class="btn primary" id="enableCamera">ENABLE CAMERA</button>
+            </div>
           </div>
-        </div>
-        <div class="camera-controls">
-          <button class="btn primary" id="startCamera">◎ Enable camera</button>
-          <button class="btn" id="stopCamera" disabled>Stop camera</button>
-          <button class="btn" id="resetReps">Reset reps</button>
-        </div>
-        <p class="hint">AI runs in your browser. Camera video is not sent to the game server. Counted reps require visible pose landmarks and a full down-up movement.</p>
-      </section>
+          <div class="camera-controls">
+            <button class="btn primary" id="startCamera">◎ Enable camera</button>
+            <button class="btn" id="stopCamera" disabled>Stop camera</button>
+            <button class="btn" id="resetReps">Reset reps</button>
+          </div>
+          <p class="hint">AI runs in your browser. Camera video is not sent to the game server.</p>
+        </section>
 
-      <section class="panel actions-panel">
-        <div><p class="eyebrow">CHOOSE YOUR MATCH</p><h2>Find your opponent.</h2><p class="muted">Global matchmaking pairs you with another connected player.</p></div>
-        <div class="action-grid"><button class="btn primary big-btn" id="findMatch">⚔ GLOBAL MATCHMAKING</button><button class="btn big-btn" id="cancelSearch" disabled>Cancel search</button></div>
-        <div class="room-tools"><button class="btn" id="createRoom">＋ Create private room</button><div class="join-control"><input id="roomCode" placeholder="ROOM CODE" maxlength="5" aria-label="Room code"><button class="btn" id="joinRoom">Join room</button></div></div>
-        <div class="room-banner hidden" id="roomBanner"><div><small>YOUR ROOM CODE</small><b id="roomCodeDisplay">-----</b><p id="roomMessage">Share this code with a friend.</p></div><button class="btn" id="copyCode">COPY CODE</button></div>
-        <div class="action-grid match-actions"><button class="btn primary big-btn" id="readyBtn" disabled>READY / START</button><button class="btn danger big-btn" id="leaveRoom" disabled>LEAVE MATCH</button></div>
-        <p class="hint" id="networkMessage">Connect to the server to start matchmaking.</p>
-      </section>
-    </div>
+        <section class="panel actions-panel">
+          <div><p class="eyebrow">CHOOSE YOUR MATCH</p><h2>Find your opponent.</h2></div>
+          <div class="action-grid"><button class="btn primary big-btn" id="findMatch">⚔ GLOBAL MATCHMAKING</button><button class="btn big-btn" id="cancelSearch" disabled>Cancel search</button></div>
+          <div class="room-tools"><button class="btn" id="createRoom">＋ Create private room</button><div class="join-control"><input id="roomCode" placeholder="ROOM CODE" maxlength="5"><button class="btn" id="joinRoom">Join room</button></div></div>
+          <div class="room-banner hidden" id="roomBanner"><div><small>YOUR ROOM CODE</small><b id="roomCodeDisplay">-----</b></div><button class="btn" id="copyCode">COPY CODE</button></div>
+          <div class="action-grid match-actions"><button class="btn primary big-btn" id="readyBtn" disabled>READY / START</button><button class="btn danger big-btn" id="leaveRoom" disabled>LEAVE MATCH</button></div>
+        </section>
+      </div>
 
-    <aside class="side-col">
-      <section class="panel side-panel"><div class="section-head"><div><p class="eyebrow">YOUR PROGRESS</p><h2>SEASON STATS</h2></div><span>✦</span></div><div class="stat-grid"><div class="stat"><small>WIN RATE</small><b>68<em>%</em></b></div><div class="stat"><small>WIN STREAK</small><b>🔥 4</b></div><div class="stat"><small>TOTAL WINS</small><b>24</b></div><div class="stat"><small>GLOBAL RANK</small><b>#128</b></div></div><div class="xp-head"><span>LEVEL 04 PROGRESS</span><b>1,240 / 2,000 XP</b></div><div class="xp-track"><i></i></div></section>
-      <section class="panel side-panel"><div class="section-head"><div><p class="eyebrow">TRAIN SMART</p><h2>FORM CHECKLIST</h2></div><span>⌁</span></div><ul class="checklist"><li><i>01</i><span><b>Body in a straight line</b><small>Keep hips and shoulders aligned.</small></span></li><li><i>02</i><span><b>Controlled descent</b><small>Lower your body with control.</small></span></li><li><i>03</i><span><b>Full push back up</b><small>Return to the top to count a rep.</small></span></li></ul></section>
-      <section class="panel side-panel"><div class="section-head"><div><p class="eyebrow">ARENA RULES</p><h2>HOW TO PLAY</h2></div><span>◈</span></div><div class="rule"><b>01</b><span>Enable your camera and fit your full upper body in view.</span></div><div class="rule"><b>02</b><span>Find a global match or create a private room.</span></div><div class="rule"><b>03</b><span>Both players press Ready to start the 40-second clash.</span></div><div class="rule"><b>04</b><span>Only your browser's AI rep counter updates your score.</span></div></section>
-    </aside>
-  </main>
-  <footer>FITCLASH 1V1 · BROWSER-BASED POSE ESTIMATION · PROTOTYPE BUILD</footer>
-</div>
+      <aside class="side-col">
+        <section class="panel side-panel"><div class="section-head"><div><p class="eyebrow">YOUR PROGRESS</p><h2>SEASON STATS</h2></div><span>✦</span></div>
+          <div class="stat-grid">
+            <div class="stat"><small>HP / XP</small><b id="statHp">0</b></div>
+            <div class="stat"><small>TOTAL WINS</small><b id="statWins">0</b></div>
+            <div class="stat"><small>TOTAL DRAWS</small><b id="statDraws">0</b></div>
+            <div class="stat"><small>TOTAL LOSSES</small><b id="statLosses">0</b></div>
+          </div>
+          <div class="xp-head"><span id="levelTitle">LEVEL 01</span><b id="xpText">0 / 100 XP</b></div>
+          <div class="xp-track"><i id="xpBar" style="width: 0%;"></i></div>
+        </section>
+      </aside>
+    </main>
+    <footer>FITCLASH 1V1 · BROWSER-BASED POSE ESTIMATION</footer>
+  </div>
 
-<div class="toast" id="toast"></div>
-<div class="modal-backdrop hidden" id="resultModal"><div class="modal panel"><div class="trophy" id="resultIcon">🏆</div><p class="eyebrow">MATCH COMPLETE</p><h2 id="resultTitle">VICTORY</h2><p id="resultText"></p><button class="btn primary" id="resultClose">BACK TO ARENA</button></div></div>
+  <div class="toast" id="toast"></div>
+  <div class="modal-backdrop hidden" id="resultModal"><div class="modal panel"><div class="trophy" id="resultIcon">🏆</div><p class="eyebrow">MATCH COMPLETE</p><h2 id="resultTitle">VICTORY</h2><p id="resultText"></p><button class="btn primary" id="resultClose">BACK TO ARENA</button></div></div>
 
-<!-- Socket.io va app.js -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="/app.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
