@@ -236,34 +236,31 @@ pose.onResults((results) => {
     drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ff3f64', radius: 4});
 
     const landmarks = results.poseLandmarks;
-    
-    // Ham o'ng, ham chap qo'l nuqtalarini aniqlaymiz (Qaysi biri ko'rinsa)
     const rightShoulder = landmarks[12], rightElbow = landmarks[14], rightWrist = landmarks[16];
     const leftShoulder = landmarks[11], leftElbow = landmarks[13], leftWrist = landmarks[15];
 
     let angle = null;
-    if (rightShoulder && rightElbow && rightWrist && rightShoulder.visibility > 0.5) {
+    if (rightShoulder && rightElbow && rightWrist) {
       angle = calculateAngle(rightShoulder, rightElbow, rightWrist);
     } else if (leftShoulder && leftElbow && leftWrist) {
       angle = calculateAngle(leftShoulder, leftElbow, leftWrist);
     }
 
-    if (angle !== null) {
+    if (angle !== null && !isNaN(angle)) {
       confidence.innerText = `FORM: ${Math.round(angle)}°`;
 
-      // Otjimaniya logikasi (yumshatilgan va ikkala qo'l uchun qulay)
-      if (angle > 150) {
+      // Kengaytirilgan va oson ishlaydigan burchak shartlari
+      if (angle > 140) {
         pushupStage = "up";
       }
-      if (angle < 105 && pushupStage === "up") {
+      if (angle < 120 && pushupStage === "up") {
         pushupStage = "down";
       }
-      if (angle > 150 && pushupStage === "down") {
+      if (angle > 140 && pushupStage === "down") {
         pushupStage = "up";
         currentReps++;
         repCounter.innerText = String(currentReps).padStart(2, '0');
         
-        // Agar o'yin ketayotgan bo'lsa, ballni serverga yuborish
         if (isPlaying) {
           socket.emit('rep-update', { reps: currentReps });
         }
